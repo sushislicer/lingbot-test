@@ -15,20 +15,14 @@ fi
 
 # RoboTwin
 if [ ! -d "robotwin" ]; then
-    git submodule add https://github.com/robotwin-platform/robotwin.git robotwin
+    echo "robotwin directory not found. Please clone it into the project root."
+    # git submodule add https://github.com/robotwin-platform/robotwin.git robotwin
 else
-    echo "robotwin directory already exists."
+    echo "robotwin directory found."
 fi
 
-# LIBERO
-if [ ! -d "libero" ]; then
-    git submodule add https://github.com/Lifelong-Robot-Learning/LIBERO.git libero
-else
-    echo "libero directory already exists."
-fi
-
-# Update submodules
-git submodule update --init --recursive
+# Update submodules (if any)
+# git submodule update --init --recursive
 
 # Create scripts directory and copy evaluation scripts
 mkdir -p scripts

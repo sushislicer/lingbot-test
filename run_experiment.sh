@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # Set environment variables
-export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/libero:$(pwd)/scripts
+export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/scripts
 export ROBOWIN_ROOT=$(pwd)/robotwin
-export LIBERO_ROOT=$(pwd)/libero
 
 # Check if models are downloaded
 if [ ! -d "checkpoints" ]; then

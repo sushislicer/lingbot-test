@@ -8,6 +8,7 @@ This repository contains the setup and scripts to reproduce the results of LingB
 *   NVIDIA GPUs (4 recommended) with CUDA 12.6 drivers.
 *   Conda (Miniconda or Anaconda).
 *   Git.
+*   `robotwin` repository cloned into the project root.
 
 ## Directory Structure
 
@@ -15,11 +16,10 @@ This repository contains the setup and scripts to reproduce the results of LingB
 .
 ├── lingbot-va/          # LingBot-VA source code (submodule)
 ├── robotwin/            # RoboTwin benchmark (submodule)
-├── libero/              # LIBERO benchmark (submodule)
 ├── scripts/             # Modified evaluation scripts
 ├── checkpoints/         # Model checkpoints (downloaded)
 ├── results/             # Experiment results
-├── setup.sh             # Setup script (clones submodules, prepares scripts)
+├── setup.sh             # Setup script (prepares scripts)
 ├── install.sh           # Installation script (creates conda env, installs deps)
 ├── download_models.sh   # Model download script
 ├── run_experiment.sh    # Experiment runner script
@@ -30,7 +30,8 @@ This repository contains the setup and scripts to reproduce the results of LingB
 
 ### 1. Setup
 
-Run the setup script to initialize git submodules (`robotwin`, `libero`) and prepare the evaluation scripts.
+Ensure `robotwin` is cloned into the project root.
+Run the setup script to prepare the evaluation scripts.
 
 ```bash
 bash setup.sh
@@ -82,11 +83,7 @@ To run other tasks, you can modify `run_experiment.sh` or run the client script 
 
 ```bash
 # Example: Run a specific task
-export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/libero:$(pwd)/scripts
+export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/scripts
 export ROBOWIN_ROOT=$(pwd)/robotwin
 bash scripts/launch_client.sh results/ "stack_bowls_three"
 ```
-
-## Notes on LIBERO
-
-The provided `lingbot-va` repository does not contain specific evaluation scripts for the LIBERO benchmark. The environment is set up to support LIBERO (submodule and dependencies installed), but you may need to adapt the evaluation scripts or obtain them from the authors to run LIBERO experiments.

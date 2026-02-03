@@ -20,10 +20,4 @@ if [ -d "robotwin" ]; then
     pip install -e robotwin
 fi
 
-# Install LIBERO dependencies
-if [ -d "libero" ]; then
-    pip install -r libero/requirements.txt
-    pip install -e libero
-fi
-
 echo "Installation complete. Please activate the environment with 'conda activate lingbot' and run run_experiment.sh."
