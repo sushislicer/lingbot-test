@@ -80,3 +80,8 @@ export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/RoboTwin:$(pwd)/scripts
 export ROBOWIN_ROOT=$(pwd)/RoboTwin
 bash scripts/launch_client.sh $(pwd)/results/ "stack_bowls_three"
 ```
+
+## Troubleshooting
+
+### Flash Attention Build Crash
+If your SSH connection crashes or the installation hangs while building `flash-attn`, it is likely due to running out of memory (RAM) during compilation. The `install.sh` script sets `MAX_JOBS=1` to mitigate this. If it still fails, try increasing your VM's memory or swap space.

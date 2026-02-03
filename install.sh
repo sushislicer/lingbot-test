@@ -5,7 +5,8 @@ pip install torch==2.9.0 torchvision==0.24.0 torchaudio==2.9.0 --index-url https
 
 # Install other dependencies
 pip install websockets einops diffusers==0.36.0 transformers==5.0.0 accelerate msgpack opencv-python matplotlib ftfy easydict
-pip install flash-attn --no-build-isolation
+# Limit MAX_JOBS to 1 to prevent OOM crashes during flash-attn compilation
+MAX_JOBS=1 pip install flash-attn --no-build-isolation
 
 # Install LingBot-VA dependencies
 pip install -r lingbot-va/requirements.txt
