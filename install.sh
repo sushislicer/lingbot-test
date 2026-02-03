@@ -15,7 +15,10 @@ pip install flash-attn --no-build-isolation
 pip install -r lingbot-va/requirements.txt
 
 # Install RoboTwin dependencies
-if [ -d "robotwin" ]; then
+if [ -d "RoboTwin" ]; then
+    pip install -r RoboTwin/requirements.txt
+    pip install -e RoboTwin
+elif [ -d "robotwin" ]; then
     pip install -r robotwin/requirements.txt
     pip install -e robotwin
 fi

@@ -14,11 +14,12 @@ fi
 # Assuming it's already there as a directory.
 
 # RoboTwin
-if [ ! -d "robotwin" ]; then
-    echo "robotwin directory not found. Please clone it into the project root."
-    # git submodule add https://github.com/robotwin-platform/robotwin.git robotwin
-else
+if [ -d "RoboTwin" ]; then
+    echo "RoboTwin directory found."
+elif [ -d "robotwin" ]; then
     echo "robotwin directory found."
+else
+    echo "RoboTwin directory not found. Please clone it into the project root."
 fi
 
 # Update submodules (if any)

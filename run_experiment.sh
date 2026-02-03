@@ -1,8 +1,18 @@
 #!/bin/bash
 
+# Detect RoboTwin directory
+if [ -d "RoboTwin" ]; then
+    ROBOWIN_DIR="RoboTwin"
+elif [ -d "robotwin" ]; then
+    ROBOWIN_DIR="robotwin"
+else
+    echo "Error: RoboTwin directory not found."
+    exit 1
+fi
+
 # Set environment variables
-export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/scripts
-export ROBOWIN_ROOT=$(pwd)/robotwin
+export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/$ROBOWIN_DIR:$(pwd)/scripts
+export ROBOWIN_ROOT=$(pwd)/$ROBOWIN_DIR
 
 # Check if models are downloaded
 if [ ! -d "checkpoints" ]; then
@@ -21,7 +31,7 @@ sleep 30
 # Launch Client
 echo "Launching Inference Client..."
 # You can specify task name and save root
-bash scripts/launch_client.sh results/ "adjust_bottle"
+bash scripts/launch_client.sh $(pwd)/results/ "adjust_bottle"
 
 # Wait for client to finish
 wait $!

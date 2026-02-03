@@ -8,14 +8,14 @@ This repository contains the setup and scripts to reproduce the results of LingB
 *   NVIDIA GPUs (4 recommended) with CUDA 12.6 drivers.
 *   Conda (Miniconda or Anaconda).
 *   Git.
-*   `robotwin` repository cloned into the project root.
+*   `RoboTwin` repository cloned into the project root.
 
 ## Directory Structure
 
 ```
 .
 ├── lingbot-va/          # LingBot-VA source code (submodule)
-├── robotwin/            # RoboTwin benchmark (submodule)
+├── RoboTwin/            # RoboTwin benchmark (submodule)
 ├── scripts/             # Modified evaluation scripts
 ├── checkpoints/         # Model checkpoints (downloaded)
 ├── results/             # Experiment results
@@ -30,7 +30,7 @@ This repository contains the setup and scripts to reproduce the results of LingB
 
 ### 1. Setup
 
-Ensure `robotwin` is cloned into the project root.
+Ensure `RoboTwin` is cloned into the project root.
 Run the setup script to prepare the evaluation scripts.
 
 ```bash
@@ -83,7 +83,7 @@ To run other tasks, you can modify `run_experiment.sh` or run the client script 
 
 ```bash
 # Example: Run a specific task
-export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/robotwin:$(pwd)/scripts
-export ROBOWIN_ROOT=$(pwd)/robotwin
+export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/RoboTwin:$(pwd)/scripts
+export ROBOWIN_ROOT=$(pwd)/RoboTwin
 bash scripts/launch_client.sh results/ "stack_bowls_three"
 ```
