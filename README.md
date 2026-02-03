@@ -6,7 +6,7 @@ This repository contains the setup and scripts to reproduce the results of LingB
 
 *   Linux environment (tested on Ubuntu).
 *   NVIDIA GPUs (4 recommended) with CUDA 12.6 drivers.
-*   Conda (Miniconda or Anaconda).
+*   Python 3.10.16 (or compatible).
 *   Git.
 *   `RoboTwin` repository cloned into the project root.
 
@@ -20,7 +20,7 @@ This repository contains the setup and scripts to reproduce the results of LingB
 ├── checkpoints/         # Model checkpoints (downloaded)
 ├── results/             # Experiment results
 ├── setup.sh             # Setup script (prepares scripts)
-├── install.sh           # Installation script (creates conda env, installs deps)
+├── install.sh           # Installation script (installs deps)
 ├── download_models.sh   # Model download script
 ├── run_experiment.sh    # Experiment runner script
 └── README.md            # This file
@@ -39,21 +39,14 @@ bash setup.sh
 
 ### 2. Installation
 
-Run the installation script to create a Conda environment named `lingbot` and install all dependencies.
+Run the installation script to install all dependencies.
+**Note:** This script installs packages directly into the current Python environment. It is recommended to run this in a container or virtual environment if you want isolation.
 
 ```bash
 bash install.sh
 ```
 
-### 3. Activate Environment
-
-Activate the created environment:
-
-```bash
-conda activate lingbot
-```
-
-### 4. Download Models
+### 3. Download Models
 
 Download the required model checkpoints from Hugging Face.
 
@@ -65,7 +58,7 @@ This will download:
 *   `robbyant/lingbot-va-base`
 *   `robbyant/lingbot-va-posttrain-robotwin`
 
-### 5. Run Experiments
+### 4. Run Experiments
 
 Run the experiment script to launch the inference server and client for the RoboTwin benchmark.
 
@@ -85,5 +78,5 @@ To run other tasks, you can modify `run_experiment.sh` or run the client script 
 # Example: Run a specific task
 export PYTHONPATH=$PYTHONPATH:$(pwd)/lingbot-va:$(pwd)/RoboTwin:$(pwd)/scripts
 export ROBOWIN_ROOT=$(pwd)/RoboTwin
-bash scripts/launch_client.sh results/ "stack_bowls_three"
+bash scripts/launch_client.sh $(pwd)/results/ "stack_bowls_three"
 ```

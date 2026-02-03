@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Create conda environment
-conda create -n lingbot python=3.10.16 -y
-source activate lingbot
-
 # Install PyTorch
 pip install torch==2.9.0 torchvision==0.24.0 torchaudio==2.9.0 --index-url https://download.pytorch.org/whl/cu126
 
@@ -23,4 +19,4 @@ elif [ -d "robotwin" ]; then
     pip install -e robotwin
 fi
 
-echo "Installation complete. Please activate the environment with 'conda activate lingbot' and run run_experiment.sh."
+echo "Installation complete. Please run run_experiment.sh."
