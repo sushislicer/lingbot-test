@@ -66,6 +66,9 @@ pip install \
   huggingface_hub \
   imageio[ffmpeg]
 
+# Ensure modern HF CLI is available (`hf download ...`).
+pip install -U 'huggingface_hub[cli]'
+
 # lerobot is imported by the eval client for writing metrics.
 pip install lerobot || true
 

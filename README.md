@@ -123,6 +123,14 @@ Download the required model checkpoints from Hugging Face.
 bash download_models.sh
 ```
 
+Notes:
+* This script prefers the **new** Hugging Face CLI: `hf download ...`.
+* If you see `huggingface-cli: command not found`, run [`install.sh`](install.sh) (it installs `huggingface_hub[cli]`), or manually:
+
+```bash
+python3 -m pip install -U 'huggingface_hub[cli]'
+```
+
 This will download:
 *   `robbyant/lingbot-va-base`
 *   `robbyant/lingbot-va-posttrain-robotwin`

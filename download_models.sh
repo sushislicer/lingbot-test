@@ -36,12 +36,34 @@ _download_one() {
     extra_args+=(--revision "$revision")
   fi
 
+  # Prefer the newer `hf` CLI. Fallback to `huggingface-cli` if needed.
+  # If neither exists, require `python3 -m pip install -U 'huggingface_hub[cli]'`.
+  local hf_cmd=""
+  if command -v hf >/dev/null 2>&1; then
+    hf_cmd="hf"
+  elif command -v huggingface-cli >/dev/null 2>&1; then
+    hf_cmd="huggingface-cli"
+  else
+    echo "Error: neither 'hf' nor 'huggingface-cli' found in PATH." >&2
+    echo "Install the Hugging Face CLI via:" >&2
+    echo "  python3 -m pip install -U 'huggingface_hub[cli]'" >&2
+    exit 1
+  fi
+
   # --local-dir-use-symlinks False makes the output self-contained (good for rsync / NFS)
-  huggingface-cli download "$repo_id" \
-    --local-dir "$out_dir" \
-    --local-dir-use-symlinks False \
-    --resume-download \
-    "${extra_args[@]}"
+  if [[ "$hf_cmd" == "hf" ]]; then
+    hf download "$repo_id" \
+      --local-dir "$out_dir" \
+      --local-dir-use-symlinks False \
+      --resume-download \
+      "${extra_args[@]}"
+  else
+    huggingface-cli download "$repo_id" \
+      --local-dir "$out_dir" \
+      --local-dir-use-symlinks False \
+      --resume-download \
+      "${extra_args[@]}"
+  fi
 }
 
 _download_one "$HF_REPO_BASE" "$CHECKPOINTS_DIR/lingbot-va-base" "$HF_REVISION_BASE"
