@@ -4,7 +4,12 @@ from typing import Dict, Optional, Tuple
 
 from typing_extensions import override
 import websockets.sync.client
-from .msgpack_numpy import Packer, unpackb
+
+# NOTE:
+# This file is executed from `scripts/` as a *standalone* module (e.g.
+# `python scripts/eval_polict_client_openpi.py`). Therefore we must avoid
+# relative imports like `from .msgpack_numpy ...` which require a package.
+from msgpack_numpy import Packer, unpackb
 
 
 class WebsocketClientPolicy:

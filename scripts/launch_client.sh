@@ -1,5 +1,7 @@
-#!/bin/bash
-export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:$LD_LIBRARY_PATH
+#!/usr/bin/env bash
+set -euo pipefail
+
+export LD_LIBRARY_PATH=/usr/lib64:/usr/lib:${LD_LIBRARY_PATH:-}
 
 task_groups=(
   "stack_bowls_three handover_block hanging_mug scan_object lift_pot put_object_cabinet stack_blocks_three place_shoe"
@@ -12,14 +14,15 @@ task_groups=(
 )
 
 save_root=${1:-'./results'}
-task_name=${2:-"adjust_bottle"}
+task_name=${2:-"${TASK_NAME:-adjust_bottle}"}
 
-policy_name=ACT
-task_config=demo_clean
-train_config_name=0
-model_name=0
-seed=0
-PORT=29056
+policy_name=${POLICY_NAME:-ACT}
+task_config=${TASK_CONFIG:-demo_clean}
+train_config_name=${TRAIN_CONFIG_NAME:-0}
+model_name=${MODEL_NAME:-0}
+seed=${SEED:-0}
+PORT=${PORT:-29056}
+test_num=${TEST_NUM:-100}
 
 PYTHONWARNINGS=ignore::UserWarning \
 XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 python scripts/eval_polict_client_openpi.py --config policy/$policy_name/deploy_policy.yml \
@@ -34,7 +37,6 @@ XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 python scripts/eval_polict_client_openpi.py -
     --save_root ${save_root} \
     --video_guidance_scale 5 \
     --action_guidance_scale 1 \
-    --test_num 100 \
+    --test_num ${test_num} \
     --port ${PORT}
-
 

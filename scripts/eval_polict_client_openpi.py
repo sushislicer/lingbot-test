@@ -40,7 +40,7 @@ from scipy.spatial.transform import Rotation as R
 from lerobot.datasets.utils import write_json
 from pathlib import Path
 
-from evaluation.robotwin.websocket_client_policy import WebsocketClientPolicy
+from websocket_client_policy import WebsocketClientPolicy
 from test_render import Sapien_TEST
 
 def add_title_bar(img, text, font_scale=0.8, thickness=2):
@@ -676,8 +676,9 @@ def parse_args_and_config():
 
 
 if __name__ == "__main__":
-    
-    Sapien_TEST()
+    # Quick Vulkan/SAPIEN sanity check. Some headless deployments may prefer to
+    # skip this (set SKIP_RENDER_TEST=1).
+    if os.environ.get("SKIP_RENDER_TEST", "0") != "1":
+        Sapien_TEST()
     usr_args = parse_args_and_config()
     main(usr_args)
-

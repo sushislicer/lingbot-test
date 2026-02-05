@@ -1,47 +1,72 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Initialize git repository if not already initialized
-if [ ! -d ".git" ]; then
-    git init
-fi
+# This repo is meant to live at (example):
+#   /workspace/lingbot-test
+# while the *actual* upstream repos live elsewhere, e.g.:
+#   /workspace/lingbot-va   (readonly)
+#   /workspace/RoboTwin     (readonly)
+#
+# We keep this repo as the "glue" layer and use env vars / symlinks to point
+# at the upstream repos.
 
-# Add submodules
-# Note: If these fail, please check the URLs or your internet connection.
-# You might need to manually clone them if submodule add fails.
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT_DIR"
 
-# LingBot-VA (already present, but adding as submodule if possible)
-# Since it's already cloned, we might need to convert it to a submodule or just leave it.
-# Assuming it's already there as a directory.
+DEFAULT_LINGBOT_VA_ROOT="/workspace/lingbot-va"
+DEFAULT_ROBOWIN_ROOT="/workspace/RoboTwin"
 
-# RoboTwin
-if [ -d "RoboTwin" ]; then
-    echo "RoboTwin directory found."
-elif [ -d "robotwin" ]; then
-    echo "robotwin directory found."
+# Resolve LingBot-VA root
+if [[ -n "${LINGBOT_VA_ROOT:-}" ]]; then
+  _LINGBOT_VA_ROOT="$LINGBOT_VA_ROOT"
+elif [[ -d "$ROOT_DIR/lingbot-va" ]]; then
+  _LINGBOT_VA_ROOT="$ROOT_DIR/lingbot-va"
 else
-    echo "RoboTwin directory not found. Please clone it into the project root."
+  _LINGBOT_VA_ROOT="$DEFAULT_LINGBOT_VA_ROOT"
 fi
 
-# Update submodules (if any)
-# git submodule update --init --recursive
+# Resolve RoboTwin root
+if [[ -n "${ROBOWIN_ROOT:-}" ]]; then
+  _ROBOWIN_ROOT="$ROBOWIN_ROOT"
+elif [[ -d "$ROOT_DIR/RoboTwin" ]]; then
+  _ROBOWIN_ROOT="$ROOT_DIR/RoboTwin"
+elif [[ -d "$ROOT_DIR/robotwin" ]]; then
+  _ROBOWIN_ROOT="$ROOT_DIR/robotwin"
+else
+  _ROBOWIN_ROOT="$DEFAULT_ROBOWIN_ROOT"
+fi
 
-# Create scripts directory and copy evaluation scripts
-mkdir -p scripts
-cp lingbot-va/evaluation/robotwin/*.py scripts/
-cp lingbot-va/evaluation/robotwin/launch_client.sh scripts/launch_client.sh
-cp lingbot-va/evaluation/robotwin/launch_server.sh scripts/launch_server.sh
+if [[ ! -d "${_LINGBOT_VA_ROOT}" ]]; then
+  echo "Error: LINGBOT_VA_ROOT not found: ${_LINGBOT_VA_ROOT}" >&2
+  exit 1
+fi
+if [[ ! -d "${_ROBOWIN_ROOT}" ]]; then
+  echo "Error: ROBOWIN_ROOT not found: ${_ROBOWIN_ROOT}" >&2
+  exit 1
+fi
 
-# Modify scripts to use environment variables and correct paths
-# Modify eval_polict_client_openpi.py
-sed -i 's|robowin_root = Path("/path/to/your/robowin")|robowin_root = Path(os.environ.get("ROBOWIN_ROOT", "/path/to/your/robowin"))|' scripts/eval_polict_client_openpi.py
+# Create local convenience symlinks (optional but simplifies relative paths).
+# These do NOT modify upstream repos.
+if [[ ! -e "$ROOT_DIR/lingbot-va" ]]; then
+  ln -s "${_LINGBOT_VA_ROOT}" "$ROOT_DIR/lingbot-va"
+fi
+if [[ ! -e "$ROOT_DIR/RoboTwin" && ! -e "$ROOT_DIR/robotwin" ]]; then
+  ln -s "${_ROBOWIN_ROOT}" "$ROOT_DIR/RoboTwin"
+fi
 
-# Modify launch_client.sh
-sed -i 's|python evaluation/robotwin/eval_polict_client_openpi.py|python scripts/eval_polict_client_openpi.py|' scripts/launch_client.sh
+mkdir -p scripts checkpoints results logs
 
-# Modify launch_server.sh
-sed -i 's|wan_va/wan_va_server.py|lingbot-va/wan_va/wan_va_server.py|' scripts/launch_server.sh
+chmod +x scripts/launch_client.sh scripts/launch_server.sh || true
 
-# Make scripts executable
-chmod +x scripts/launch_client.sh scripts/launch_server.sh
+cat <<EOF
+Setup complete.
 
-echo "Setup complete. Please run install.sh to install dependencies."
+Resolved paths:
+  LINGBOT_VA_ROOT=${_LINGBOT_VA_ROOT}
+  ROBOWIN_ROOT=${_ROBOWIN_ROOT}
+
+Next:
+  bash install.sh
+  bash download_models.sh
+  bash run_experiment.sh
+EOF
