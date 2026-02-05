@@ -124,8 +124,9 @@ bash download_models.sh
 ```
 
 Notes:
-* This script prefers the **new** Hugging Face CLI: `hf download ...`.
-* If you see `huggingface-cli: command not found`, run [`install.sh`](install.sh) (it installs `huggingface_hub[cli]`), or manually:
+* This repo uses the **current Hugging Face Hub CLI**: `hf download ...` (see: https://huggingface.co/docs/huggingface_hub/en/guides/cli).
+* If you hit auth/rate-limit issues, run `hf auth login` (or set `HF_TOKEN`).
+* If `hf` is missing, run [`install.sh`](install.sh) (it installs `huggingface_hub[cli]`), or manually:
 
 ```bash
 python3 -m pip install -U 'huggingface_hub[cli]'

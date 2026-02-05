@@ -36,34 +36,39 @@ _download_one() {
     extra_args+=(--revision "$revision")
   fi
 
-  # Prefer the newer `hf` CLI. Fallback to `huggingface-cli` if needed.
-  # If neither exists, require `python3 -m pip install -U 'huggingface_hub[cli]'`.
-  local hf_cmd=""
-  if command -v hf >/dev/null 2>&1; then
-    hf_cmd="hf"
-  elif command -v huggingface-cli >/dev/null 2>&1; then
-    hf_cmd="huggingface-cli"
-  else
-    echo "Error: neither 'hf' nor 'huggingface-cli' found in PATH." >&2
-    echo "Install the Hugging Face CLI via:" >&2
+  # Use the current Hugging Face Hub CLI (`hf`) as documented:
+  # https://huggingface.co/docs/huggingface_hub/en/guides/cli
+  #
+  # NOTE: `hf download` options vary by version. This script intentionally
+  # uses only the stable options shown by `hf download --help`:
+  #   --repo-type, --revision, --include/--exclude, --cache-dir, --local-dir,
+  #   --force-download, --token, --max-workers
+  if ! command -v hf >/dev/null 2>&1; then
+    echo "Error: 'hf' command not found in PATH." >&2
+    echo "Install it via:" >&2
     echo "  python3 -m pip install -U 'huggingface_hub[cli]'" >&2
     exit 1
   fi
 
-  # --local-dir-use-symlinks False makes the output self-contained (good for rsync / NFS)
-  if [[ "$hf_cmd" == "hf" ]]; then
-    hf download "$repo_id" \
-      --local-dir "$out_dir" \
-      --local-dir-use-symlinks False \
-      --resume-download \
-      "${extra_args[@]}"
-  else
-    huggingface-cli download "$repo_id" \
-      --local-dir "$out_dir" \
-      --local-dir-use-symlinks False \
-      --resume-download \
-      "${extra_args[@]}"
+  local token_args=()
+  if [[ -n "${HF_TOKEN:-}" ]]; then
+    token_args+=(--token "$HF_TOKEN")
   fi
+
+  local cache_args=()
+  if [[ -n "${HF_CACHE_DIR:-}" ]]; then
+    cache_args+=(--cache-dir "$HF_CACHE_DIR")
+  fi
+
+  local max_workers="${HF_MAX_WORKERS:-8}"
+
+  hf download "$repo_id" \
+    --repo-type model \
+    --local-dir "$out_dir" \
+    --max-workers "$max_workers" \
+    "${cache_args[@]}" \
+    "${token_args[@]}" \
+    "${extra_args[@]}"
 }
 
 _download_one "$HF_REPO_BASE" "$CHECKPOINTS_DIR/lingbot-va-base" "$HF_REVISION_BASE"
