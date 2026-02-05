@@ -106,6 +106,13 @@ Run the installation script to install all dependencies.
 bash install.sh
 ```
 
+If you see `ModuleNotFoundError: No module named 'sapien'`, re-run [`install.sh`](install.sh). It now **fails fast** if critical RoboTwin sim deps (including `sapien`) are not importable, and it explicitly installs the RoboTwin-pinned versions:
+
+* `sapien==3.0.0b1`
+* `mplib==0.2.1`
+* `gymnasium==0.29.1`
+* `scipy==1.10.1`
+
 This script follows the RoboTwin install doc and (when possible) applies the documented hotfixes:
 
 * `mplib/planner.py` — removes the problematic `or collide` branch

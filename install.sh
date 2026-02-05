@@ -100,11 +100,52 @@ if [[ -f "$ROBOTWIN_SRC_ROOT/script/requirements.txt" ]]; then
   # RoboTwin pins torch; we already installed a newer torch for LingBot-VA.
   # Filter out torch/torchvision to avoid forced downgrades.
   grep -v -E '^torch(vision|audio)?==|^torch(vision|audio)?\b' "$ROBOTWIN_SRC_ROOT/script/requirements.txt" > "${_tmp_rt_req_file}"
+  # Best-effort install of RoboTwin's full requirement set (minus torch pins).
+  # Some optional packages can fail to build on certain images; we validate
+  # critical ones (e.g. sapien) below.
   pip install -r "${_tmp_rt_req_file}" || true
   rm -f "${_tmp_rt_req_file}" || true
 else
   echo "Warning: RoboTwin requirements not found at $ROBOTWIN_SRC_ROOT/script/requirements.txt" >&2
 fi
+
+###############################################################################
+# 3b) Ensure critical RoboTwin simulation deps exist (fail fast)
+###############################################################################
+
+echo "Ensuring critical RoboTwin simulation dependencies (sapien/mplib/gymnasium/scipy) ..."
+
+# These are the core packages required for running RoboTwin simulation/eval.
+# They are pinned in RoboTwin's [`script/requirements.txt`](RoboTwin/script/requirements.txt:1).
+python3 -m pip install \
+  "sapien==3.0.0b1" \
+  "mplib==0.2.1" \
+  "gymnasium==0.29.1" \
+  "transforms3d==0.4.2" \
+  "scipy==1.10.1"
+
+python3 - <<'PY'
+import importlib
+
+missing = []
+for name in ("sapien", "mplib", "gymnasium", "scipy"):
+    try:
+        importlib.import_module(name)
+    except Exception as e:
+        missing.append((name, str(e)))
+
+if missing:
+    print("\nERROR: Missing critical RoboTwin deps:")
+    for name, err in missing:
+        print(f"  - {name}: {err}")
+    print("\nCommon causes:")
+    print("  - Using a Python version other than 3.10")
+    print("  - Missing system Vulkan libs / driver stack")
+    print("  - pip wheel not available for your platform")
+    raise SystemExit(1)
+
+print("Critical RoboTwin deps import OK.")
+PY
 
 ###############################################################################
 # 4) Apply upstream-documented hotfixes in site-packages
